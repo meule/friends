@@ -1,0 +1,1028 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="google-site-verification" content="cIuHzF8MJWR_FURv1t2iGCxkHGcAWu-ppDFVFZ1UNnM" />
+  <link rel="shortcut icon" href="favicon.ico">
+  <script  type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/pace/0.4.15/pace.min.js"> </script>
+  <link href="//cdnjs.cloudflare.com/ajax/libs/pace/0.4.10/themes/pace-theme-flat-top.css" rel="stylesheet" />    
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/d3/3.3.11/d3.min.js"></script>
+  <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {   /*font-family: 'PT Sans';*/   background: #ddd;   color: #222; font-size: 14px;}
+    text  { }
+    p { }
+    .labels { fill: #666; font-size: 11px;}
+    .light { fill: #aaa;}
+    .container {width: 100%; }
+    .mainCont {width: 100%;background: #ddd; }
+    .pic {
+      fill: #bbb
+    }
+    .footer {
+        padding: 10px;
+      
+      background-color: #bbb;
+    }
+    .smalltext {   /*font-family: 'PT Sans';*/  color: #222; font-size: 12px; }
+    #sharePic {text-align: center;}
+    .modal-dialog {/*width: auto; height: auto; max-height: 96%; max-width: 96%;*/} 
+    .mainCont {text-align: center;}
+  </style>
+  <title>Your Friends — Ages</title>
+
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+  <![endif]-->
+  </head>
+
+<body>
+
+  <div class="navbar navbar-inverse navbar-static-top" role="navigation">
+    <div class="container">
+      <div class="navbar-header ">
+        <!--button type="button" class="navbar-toggle .navbar-btn"  data-target=".navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar">1</span>
+          <span class="icon-bar">2</span>
+          <span class="icon-bar">3</span>
+        </button-->
+        <a class="navbar-brand" >You Are Your Friends. How Old Are They?</a>
+      </div>
+      <div class="collapse navbar-collapse btn-group">
+        <ul id="menu" class="nav navbar-nav navbar-right" role="menu">
+          <li id="all" class="active"><a href="#">All Together</a></li>
+          <li id="fm"><a href="#" >By Gender</a></li>
+          <li id="heart" ><a href="#">Funny Third Option</a></li>
+        </ul>
+      </div><!--/.nav-collapse -->
+
+    </div>
+  </div>
+
+  <div class="container">
+    <div id='loginText'><p>Please login to Facebook and let me show your data. It does not hurt you, sure ;-)</p></div>
+  <div class="mainCont">
+  <div class="alert alert-success alert-dismissable dataPosted" style='display:none'>
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+    You are my hero! Thank you -‿-
+  </div>    
+
+  <div class="alert alert-success alert-dismissable something" style='display:none'>
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+    Something went wrang, sorry -‿-<br /> <a href='mailto:kostia@varik.ru'>Tell me</a>, please.
+  </div>    
+
+  <div class="alert alert-success alert-dismissable shared" style='display:none'>
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+    Your viz <a id="postedURL">on your timeline</a>. Thank you!
+  </div>    
+
+    
+     <div id='svg' style='display:none'></div>
+     
+  </div>
+  </div>
+      <div class="footer footer-default">
+        <div class="container">
+        <div class="row">
+         <div class="text-left col-xs-6 col-md-4" >
+
+         <div id='fbbutton'>
+         <button id='login' class='btn btn-primary btn-left' >Log in with Facebook</button>
+          <div id="fb-root"></div>
+          
+         <!--fb:login-button show-faces="true" width="100%" max-rows="3" ></fb:login-button--></div>
+         <div id='logout' style='display:none;'>
+          <button id='fblogout' class='btn btn-default btn-left' >Log out of the app</button>
+         </div>
+         </div>
+         <div class="col-xs-6 col-md-4 text-center">
+           <button id='share' class='btn btn-primary btn-center share' style='display:none;'>Share on Facebook</button>
+         </div>
+         <div id='about' class="col-xs-6 col-md-4">
+          <p class='smalltext text-left'>
+            You are your friends. How old are they? Do you have more younger girls or boys? 
+            Who are they? Who are you? Explore yourself through your friends!</p><p class='smalltext text-left'>
+            It's beta. Yet only ages are shown. And not optimized for >700 friends yet. But more in 2014. Happy New Year! -‿- </p>
+            <p class='smalltext text-right'>
+            <a href='http://facebook.com/varik.ru'>Konstantin Varik</a>
+          </p>
+          </div>
+    </div>
+    </div>
+    </div>
+    <!-- Modal -->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel">Share Your Viz on your Facebook Timeline*</h4>
+        </div>
+        <div class="modal-body">
+          <p><a href='vritti.ru/friends'>Explore yourself through your friends!</a></p>
+          <div id='sharePic'><canvas id='canvas'></canvas></div>
+          <p class='smalltext share' style='display:none;'>*When you post your viz to your timeline, I record your anonymized data (only ages and genders, no names). When I have collected enouth data, I'll show average distributions with your own data to give you more insights. </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">No, thank you</button>
+          <button type="button" class="btn btn-info" id='useDataClick'>Just use my anonimized data</button>
+          <button type="button" class="btn btn-primary" id='shareClick'>Share on Facebook!</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->      
+
+  <img id='imgCanvas' src='' style="display:none"/>
+
+  <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+    
+  <script>
+
+//Bootstap events
+  $(document).ready(function() {
+    $('#menu li').click(function() {
+        $('#menu li').addClass('active').not(this).removeClass('active');
+    });
+    $('#login').click(function(){
+      fbLogin(function(response){ console.log(response) })
+    });
+    $('#all').click(function(){
+      showAll();
+    });
+    $('#fm').click(function(){
+      showFM();
+    });
+    $('#heart').click(function(){
+      showHeart();
+    });
+    $('#share').click(function(){
+      post2fbModal();
+      //fbPostPerm();
+    });
+    $('#useDataClick').click(function(){
+      postData();
+      $('#myModal').modal('hide');
+      $(".dataPosted").alert();
+      d4.show('.dataPosted');
+
+    });
+    $('#fblogout').click(function(){
+      FB.logout(function(response) {
+        console.log(response);
+        d4.show('#fbbutton');
+        d4.hide('#logout');
+        d4.hide('#share');
+        already=false;
+        svg.transition().attr('height',0).duration(2000).remove();
+        svg=null;
+        FB.api('/me/permissions', 'delete', function(response) {
+            console.log(response); // true
+        });
+      });
+    });
+    });
+
+var d4={
+
+  up: function (t){ t.parentNode.appendChild(t) },
+
+  text2words: function(ttt){
+    return csvData[i].text
+      .replace( /(?:\bhttps?:\/\/|\bwww\.|\[url)\S+\s*/g, '' )
+      .replace(/[,.:?!()<>'"@;/-]/g,' ')
+      .replace(/\s{2,}/g, ' ')
+      .replace(/^\s/,'').replace(/\s$/,'')
+      .split(' ');
+  },
+
+
+  OpenInNewTab : function(url)
+  {
+    //console.log(url);
+    var win=window.open(url, '_blank');
+    win.focus();
+  },
+
+  show : function (cssName) { 
+    t=d3.selectAll(cssName); 
+    t.attr('display') ? t.attr('display',null) :''
+    return t.style('display',null); 
+  },
+
+  hide: function (cssName) { 
+    return d3.selectAll(cssName).style('display','none'); 
+  },
+
+  visible: function(cssName) {
+    return ((Math.round((+d3.select(cssName).style('fill-opacity'))*100)!=0)&&(d3.selectAll(cssName).style('display')!='none'))
+  },
+
+  showOp: function(cssName,duration) {
+    return d3.selectAll(cssName).transition().style("fill-opacity",1.0).duration(duration ? duration : dur);
+  },
+
+  hideOp: function(cssName,duration) {
+    return d3.selectAll(cssName).transition().style("fill-opacity",0).duration(duration ? duration : dur);
+  },
+
+  rect: function (d3element,x,y,width,height,id,fill,stroke,strokeWidth,nonVisible,cssClass) {
+    return d3element.append('rect')
+      .attr('x',x)
+      .attr('y',y)
+      .attr('width',width)
+      .attr('height',height)
+      .attr('id',id ? id : null)
+      .style('fill',fill ? fill : 'none')
+      .style('stroke',stroke ? stroke : 'none')
+      .style('stroke-width',strokeWidth ? strokeWidth : 0)
+      .style('display',nonVisible ? 'none' : null)
+      .attr('class',cssClass ? cssClass : null)
+  },
+
+  text: function(d3element, text, x, y, cssClass, id, align,anima) {
+    textEl=d3element.append('text')
+      .attr('id',id)
+      .attr('class',cssClass)
+          .style('text-anchor',align ? (align=='right'||'end' ? 'end' : (align=='left' ? 'begin' : 'middle')) : '')
+          .style('text-align',align ? align : 'begin')
+          .text(text)
+          .attr('y',y)
+          .attr('x',x);   
+      if (anima) 
+        textEl.style('fill-opacity',0)
+          .transition()
+          .style('fill-opacity',1)
+          .duration(500);
+      return textEl;
+  },
+  wWidth: function () {
+    var w = window,
+        d = document,
+        e = d.documentElement,
+        g = d.getElementsByTagName('body')[0];
+        return w.innerWidth || e.clientWidth || g.clientWidth
+  },
+
+  elWidth: function (element) {
+    return parseInt(window.getComputedStyle(element,null).getPropertyValue("width"))
+  },
+  wHeight: function () {
+    var w = window,
+        d = document,
+        e = d.documentElement,
+        g = d.getElementsByTagName('body')[0];
+        return w.innerHeight|| e.clientHeight|| g.clientHeight;
+  },
+  svg2canvas: function(svgID, canvasID,cwidth,cheight){
+    // convert base64 to raw binary data held in a string
+    // doesn't handle URLEncoded DataURIs
+    //console.log($("#"+svgID),$("#"+svgID).html(), canvasID,cwidth,cheight);
+    canvg(canvasID, $("#"+svgID).html(),{
+      'scaleWidth':cwidth,
+      'scaleHeight':cheight,
+      'useCORS':true,
+      'ignoreMouse': true, 
+      'ignoreAnimation': true
+    });
+    // the canvas calls to output a png
+    canv=document.getElementById(canvasID);
+    canv.style.width=(canv.width=cwidth)+'px';
+    canv.style.height=(canv.height=cheight)+'px';
+    //canv.style=null;
+    return canv;
+  },
+
+  canvas2png: function(canvas){
+
+    dataURI = canvas.toDataURL("image/png");
+
+      var byteString = atob(dataURI.split(',')[1]);
+      var ab = new ArrayBuffer(byteString.length);
+      var ia = new Uint8Array(ab);
+      for (var i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i);
+      }
+      return new Blob([ab], {
+          type: 'image/png'
+      });
+
+  },
+  loadJS: function(scripts,callback1){
+    i=0;
+    scripts.forEach(function(d){
+      jsURL=d;
+      //console.log(d);
+      (function(d){
+           var js, id = i++, ref = d.getElementsByTagName('script')[0];
+           if (d.getElementById(id)) {return;}
+           js = d.createElement('script'); js.id = id; js.async = true;
+           js.src = jsURL;
+           ref.parentNode.insertBefore(js, ref);
+           //console.log(js);
+           js.onload=callback1;
+        }(document));
+    })
+  },
+  ImgToBase64: function(url, callback, outputFormat){
+        //http://stackoverflow.com/questions/6150289/how-to-convert-image-into-base64-string-using-javascript
+        // 2DO for IE: http://stackoverflow.com/questions/18112047/canvas-todataurl-working-in-all-browsers-except-ie10
+
+        var canvas = document.createElement('CANVAS');
+        var ctx = canvas.getContext('2d');
+        var img = new Image;
+        img.crossOrigin = 'Anonymous';
+        img.onload = function(){
+            canvas.height = img.height;
+            canvas.width = img.width;
+            ctx.drawImage(img,0,0);
+            var dataURL = canvas.toDataURL(outputFormat || 'image/png');
+            callback.call(this, dataURL);
+            // Clean up
+            canvas = null; 
+        };
+        img.src = url;
+    }
+}
+
+var svg, blob;
+  //heart path is from http://thenounproject.com/term/heart/187/
+  var heartString='M49.999,91.46c3.944-3.943,26.458-26.47,40.533-40.543c12.61-12.611,12.341-30.992,0.876-42.395C79.943-2.884,61.404-2.834,49.999,8.632C38.595-2.834,20.056-2.884,8.591,8.522C-2.874,19.925-3.142,38.306,9.467,50.917C23.541,64.99,46.058,87.517,49.999,91.46z';
+
+  var modes=['agesAll','agesFM','heart'], curMode='no';
+  var today=new Date();
+
+  var lowPercent=0.25, highPercent=0.5, percent=1, minFriendsNorm=200, minAgesNorm=25;
+
+  var already=false, isRandomCalc=false, uploadGranted=false, isDataSent=false, isStatShow=false, lastStrNum=0;
+  var size={};
+  var minWidth=960
+      width=minWidth, 
+      heartWidth=300,
+      heightH=500,
+      widthH=500,
+      height=720, xMargin=20, margins=20,
+      shareScale=2,
+      sSize=20, lSize=50, delta=1, tMargin=5, tHeight=20, tHeightAxis=15;
+      pWidth=200, pHeight=50, labelWidth=68, lowHighMargin=10,
+      dur=800;
+  var you, friends, me;
+  var num={}, minAge={}, maxAge={}, ages=[], meY;
+  var friends=[], fr=[], frM=[], frF=[], byAge={}, byAgeM={}, byAgeF={}, fStat=[];
+  
+  var authToken;
+  var shareString="Explore yourself through your friends! http://vritti.ru/friends",
+      fbPostedURL='https://www.facebook.com/photo.php?fbid=',
+      statURL='./',
+      fbPicURL="//graph.facebook.com/";
+
+function fbLogin(){
+    if (!uploadGranted)
+      FB.login(function(response) {
+          }, {scope: 'user_about_me,user_birthday,friends_about_me,friends_birthday'});
+}
+
+function fbPostPerm(){
+    FB.login(function(response) {
+          console.log(response);
+          if (response.status==='connected') post2fb()
+            else {
+              $(".something").alert();
+              d4.show('.something');
+            }
+        }, {scope: 'photo_upload'});
+}
+
+window.fbAsyncInit = function() {
+    FB.init({
+        appId    : '130978340377178',
+        status    : false, // check login status
+        cookie    : false, // enable cookies to allow the server to access the session
+        xfbml    : false, // parse XFBML
+        oauth   :true
+    });
+    FB.Event.subscribe('auth.authResponseChange', function(response) {   
+        console.log(response,response.status);
+         if (response.status === 'connected') {
+            authToken=response.authResponse.accessToken;
+            if (!already) {
+               you={}, friends=[], me={};
+               num={}, minAge={}, maxAge={}, num.max={}, ages=[], meY=0;;
+               fr=[], frM=[], frF=[], byAge={}, byAgeM={}, byAgeF={};
+              
+              d4.hide('#fbbutton');
+              d4.show('#logout');
+              getData();
+            }
+         } else if (response.status === 'not_authorized') {
+            fbLogin();
+         } else {
+            fbLogin();
+         }
+    });
+    };
+
+(function(d){  var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement('script'); js.id = id; js.async = true;
+     js.src = "//connect.facebook.net/en_US/all.js";
+     ref.parentNode.insertBefore(js, ref);
+     //console.log(js);
+      }(document));
+
+function getData() {
+
+    FB.api({ method: 'fql.query', query: 'SELECT user_about_me,user_birthday,friends_about_me,friends_birthday,photo_upload FROM  permissions WHERE uid=me()' }, function(resp) {   
+    if (resp[0]['photo_upload']==="1") uploadGranted=true;     
+    for(var key in resp[0]) {        
+        if(resp[0][key] === "1")        
+            console.log(key+' is granted');        
+        else        
+            console.log(key+' is not granted');        
+    }        
+    });   
+    
+    FB.api('/me?fields=id,name,birthday,gender', function(response) { you=response;  });
+    FB.api('/me/friends?fields=id,name,birthday,gender', function(response) { 
+      friends=response.data; 
+      if (friends)
+        if (friends.length>0) {
+          already=true;
+          fshow(); 
+        }
+      
+    });
+}
+    
+function showStat(strNum) {
+  if (!strNum) strNum=lastStrNum;
+  fr=[], you={}, friends=[], me={};
+  num={}, minAge={}, maxAge={}, num.max={}, ages=[], meY=0;;
+  fr=[], frM=[], frF=[], byAge={}, byAgeM={}, byAgeF={};
+  percent=1;
+  if (svg) svg.remove();
+
+  function showS(){
+    var fff2 = eval("(" + fStat[strNum] + ")");
+    var fff=fff2["Friends"];
+    console.log(fff2['Img']);
+    for (i=0;i<fff.length;i++) {
+      fff[i].id=i;
+      fff[i].name='Innokentiy';
+      fff[i].birthday=fff[i].bd;
+      fff[i].gender=fff[i].g;
+      friends.push(fff[i]);
+      if (fff[i].me) you=fff[i];
+      //console.log(fff[i]);
+    }
+    fshow(); 
+  }
+  if (fStat.length==0) 
+    d3.text('../friends__.json',function(error,data){
+      fStat=data.split('\n');
+      isStatShow=true;
+      showS();
+    })  
+  else showS();
+  lastStrNum=strNum+1;
+}
+
+function dataInit(){
+    num={all:0,dates:0,ages:0,toomuch:0,gender:0,m:0,f:0,younger:{all:0,f:0,m:0},older:{all:0,f:0,m:0},low:1,high:1,max:{all:0,f:0,m:0},noAge:{all:0,f:0,m:0},me:{all:0,f:0,m:0},ageGroups:0,maxUpic:{all:0,f:0,m:0}};
+    age={min:{all:0,f:0,m:0},max:{all:0,f:0,m:0}};
+
+    size.x=Math.floor((d4.wHeight()-labelWidth)/(sSize+delta))
+    size.y=Math.floor((d4.wWidth()-lowHighMargin*2-margins*2)/(sSize+delta))
+
+    you.itsme=true;
+    if (you.birthday) friends.push(you);
+
+    num.all=friends.length;
+
+    //calculate ages from birthdays
+    friends.forEach(function(d){
+      if (d.birthday) {
+          num.dates++;
+          if (d.date=d3.time.format('%m/%d/%Y').parse(d.birthday)) {
+              num.ages++;
+              if ((ageCur=(today - d.date)/31557600000)<90) {
+                  num.toomuch++;
+                  d.age=ageCur;
+                  d.fAge=Math.floor(d.age);
+                  fr.push(d);
+                  if (!byAge[Math.floor(ageCur)]) byAge[Math.floor(ageCur)]=[];
+                  byAge[Math.floor(ageCur)].push(d);
+                  if (d.gender) {
+                      num.gender++;
+                  }
+              }
+          }
+      }
+      if (+d.id===+you.id) me=d; });
+
+    fr.sort(function(a,b){if (b.age) {return a.age-b.age} else return false; });
+    age.low=age.min.all=Math.floor(fr[0].age);
+    age.high=age.max.all=Math.floor(fr[fr.length-1].age);
+
+    //if (size.y<(age.min.all-age.max.all+1)) 
+    
+    //calculate full distribution (ageY, ageNum)
+    for (i=0;i<fr.length;i++) { 
+        fr[i].ageY=fr[i].fAge-age.min.all;
+        prevAge = (i==0) ? 0 : fr[i-1].fAge;
+        if (fr[i].fAge>prevAge) { 
+            ii=0; iiM=0; iiF=0;
+        }
+        fr[i].ageNum=ii++;
+        num.max.all=Math.max(ii,num.max.all);
+
+        curKey='me';
+        if (fr[i].age<me.age) curKey='younger';
+        if (fr[i].age>me.age) curKey='older';
+        num[curKey].all++;
+        if (fr[i].gender=='male') {
+          num[curKey].m++;
+          fr[i].ageNumM=iiM++;
+          num.max.m=Math.max(iiM,num.max.m);
+          num.m++;
+        }
+        if (fr[i].gender=='female') {
+          num[curKey].f++;
+          fr[i].ageNumF=iiF++;
+          num.max.f=Math.max(iiF,num.max.f); 
+          num.f++;
+        }
+    }
+
+    //calculate low and high interval's percents
+    if ((age.max.all-age.min.all)<minAgesNorm) percent=0
+      else {
+        deltaH=age.max.all-(me.fAge ? me.fAge : (age.max.all-age.min.all)/2);
+        deltaL=-age.min.all+(me.fAge ? me.fAge : (age.max.all-age.min.all)/2);
+        highPercent=deltaH/(deltaH+deltaL);
+        lowPercent=deltaL/(deltaH+deltaL);
+      }
+      highPercent=percent*highPercent;
+      lowPercent=percent*lowPercent;
+
+    //calculate high interval age
+    for(num.high=1;num.high<Math.floor(num.max.all*highPercent);num.high++);
+    age.high=fr[fr.length-num.high].fAge;
+
+    //calculate high and low intervals and make distribution with them (ageY, ageNum)
+    for (i=0, ii=0, iF=0, iM=0, iiF=0, iiM=0;i<fr.length;i++) {
+        if (num.low<(Math.floor(num.max.all*lowPercent)-1)) {
+            fr[i].ageY=0; 
+            fr[i].first=true;
+            fr[i].ageNum=i; 
+            if (fr[i].gender=='male') {
+                fr[i].ageNumM=iM;
+                iM++ 
+            } else if (fr[i].gender=='female'){
+                fr[i].ageNumF=iF;
+                iF++;
+            } 
+            num.low++;
+            age.low=fr[i].fAge;
+        } else {
+            fr[i].ageY=fr[i].fAge-age.low;
+            if (fr[i].fAge>age.high-1) {
+                fr[i].ageY=age.high-age.low;
+                fr[i].last=true;
+                fr[i].ageNum=ii;
+                    if (fr[i].gender=='male') {
+                        fr[i].ageNumM=iiM;
+                        iiM++ 
+                    } else if (fr[i].gender=='female'){
+                        fr[i].ageNumF=iiF;
+                        iiF++;
+                    }
+                ii++;
+                }
+        }
+        fr[i].ageYF=fr[i].ageY;
+        fr[i].ageYM=fr[i].ageY;
+    }
+
+    //data for Y-axis
+    for (i=age.low;i<=age.high;i++) 
+      ages.push({n:num.ageGroups++,text:(i==age.low ? (fr[0].fAge+'...'+i) : (i==age.high ? (i+'...'+fr[fr.length-1].fAge) : i))});
+
+      ages.push({n:num.ageGroups++,text:''})
+      ages.push({n:num.ageGroups++,text:'hidden'})
+
+    width=Math.max(d4.wWidth()-2*margins,minWidth);
+
+    xMargin=(width-(num.max.all*(sSize+delta)+labelWidth))/2;
+    if (xMargin<0) xMargin=0;
+    
+    num.maxUpic.all=Math.floor((width-xMargin-labelWidth)/(sSize+delta));
+    num.maxUpic.f=num.max.f+Math.floor(xMargin/(delta+sSize));
+    num.maxUpic.m=Math.floor((width-labelWidth)/(delta+sSize))-num.maxUpic.f;
+
+    //calculate no age friends
+    for (i=0, ii=0, iiF=0, iiM=0, noAgeNum=0, noAgeNumF=0, noAgeNumM=0;i<friends.length;i++) {
+        if (!friends[i].age) {
+            num.noAge.all++;
+            if (ii>=num.maxUpic.all) {
+              ii=0;
+              noAgeNum++;
+            }  
+            friends[i].ageY=age.high-age.low+noAgeNum+2
+            friends[i].ageNum=ii;
+            ii++;
+            if (friends[i].gender=='female') {
+              num.noAge.f++;
+              if (iiF>=num.maxUpic.f) {
+                iiF=0;
+                noAgeNumF++;
+              }  
+              friends[i].ageYF=age.high-age.low+noAgeNumF+2
+              friends[i].ageNumF=iiF;
+              iiF++;
+
+            } else if (friends[i].gender=='male') {
+              num.noAge.m++;
+              if (iiM>=num.maxUpic.m) {
+                iiM=0;
+                noAgeNumM++;
+              }  
+              friends[i].ageYM=age.high-age.low+noAgeNumM+2
+              friends[i].ageNumM=iiM;
+              iiM++;
+
+            } else {
+              friends[i].ageYM=noAgeNumM;
+              friends[i].ageYF=noAgeNumF;
+            }
+            friends[i].last=true;
+            fr.push(friends[i]);
+        }
+    }
+
+
+    height=(age.high-age.low+Math.max(noAgeNum,noAgeNumM,noAgeNumF)+4)*(sSize+delta)+lowHighMargin*2;
+
+    //calculate x-y
+    fr.forEach(function(d){
+      d.x={
+        agesAll: d.ageNum*(sSize+delta)+labelWidth+xMargin,
+        agesFM: d.gender ? ( (d.gender=='female') ? (xMargin+(num.max.f-d.ageNumF)*(sSize+delta)) : ((num.max.f+d.ageNumM)*(sSize+delta)+labelWidth+xMargin) ) : -sSize
+      };
+      d.y={
+        agesAll: d.ageY*(sSize+delta)+lowHighMargin*(d.first ? 0 : (d.last ? 2 : 1)),
+        agesFM: (d.gender=='male' ? d.ageYM : d.ageYF)*(sSize+delta)+lowHighMargin*(d.first ? 0 : (d.last ? 2 : 1))        
+      }
+    })    
+
+    //calculate percents
+      num.noAgeP=Math.round(100*num.noAge.all/num.all);
+      num.noAge.mP=Math.round(100*num.noAge.m/(num.noAge.m+num.m));
+      num.noAge.fP=Math.round(100*num.noAge.f/(num.noAge.f+num.f));
+
+      num.younger.allP=Math.round(100*num.younger.all/num.toomuch);
+      num.younger.mP=Math.round(100*num.younger.m/num.m);
+      num.younger.fP=Math.round(100*num.younger.f/num.f);
+      num.older.allP=Math.round(100*num.older.all/num.toomuch);
+      num.older.mP=Math.round(100*num.older.m/num.m);
+      num.older.fP=Math.round(100*num.older.f/num.f);
+}
+
+function svgInit(){
+    d3.selectAll('canvas').attr('width',width/shareScale).attr('height',height/shareScale);
+
+    svg=d3.select('#svg').append('svg')
+      .attr('width',width+'px').attr('height',height+'px')
+      .attr('id','friendsSVG');
+
+    d3.ns.prefix.xmlns = 'http://www.w3.org/2000/svg';
+
+    svg.attr('xmlns:xlink','http://www.w3.org/1999/xlink');
+
+    d4.show('#svg');
+    d4.hide('#loginText');
+    d4.rect(svg,0,0,width,height,'back');
+
+    if (you.birthday) {
+        meY=(me.ageY)*(sSize+delta)-1+lowHighMargin*(me.first ? 0 : (me.last ? 2 : 1));
+        d4.rect(svg,0,meY,width,sSize+delta+1,'yourAge','#ccc').style('fill-opacity',0).transition().style('fill-opacity',1).duration(dur);
+    }  
+
+    svg.append('g').attr('id','axis');
+
+    imgrs=svg.append('g').attr('id','pics').selectAll('g').data(fr).enter().append('g');
+    imgrs.append('rect')
+        .attr('class','pic')
+        .attr('width',sSize).attr('height',sSize);
+    imgrs.append('svg:image')
+        .attr('id',function(d){return d.id})
+        .attr('class','pic')
+        .attr('width',sSize).attr('height',sSize)
+        //.attr('xlink:href',function(d){ return "http://graph.facebook.com/"+d.id+"/picture"})
+        .on('mouseover',function(d){popup(d,this)})
+        .each(function(d){
+          var thisImg=this;
+          //console.log(fbPicURL+d.id+"/picture?width="+sSize*2+"&height="+sSize*2);
+          d4.ImgToBase64(isStatShow ? './block.png' : fbPicURL+d.id+"/picture?width="+sSize*2+"&height="+sSize*2, function(base64Img){
+              //console.log(base64Img);
+              d.picSrc=base64Img;
+              d3.select(thisImg).attr('xlink:href',base64Img);
+          });                
+         });
+}
+
+function fshow() {
+    dataInit();
+    svgInit();
+    
+    d4.show('.share');
+    showAll();
+    
+    d4.loadJS(["//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.2/raphael-min.js"],function(){
+      isRandomCalc=randomCalc();
+    });
+    d4.loadJS(["//canvg.googlecode.com/svn/trunk/rgbcolor.js","//canvg.googlecode.com/svn/trunk/StackBlur.js","//canvg.googlecode.com/svn/trunk/canvg.js"]);
+    postDataAges('1');
+} 
+ 
+function popup(d,t){
+    d3.select(t).style('cursor','pointer');
+    d3.select(t)
+      .on('mouseout',function(){
+          d3.selectAll('.popup').attr('fill-opacity','0%').remove();
+          d3.select(this).style('cursor',null)
+        })
+      .on('click',function(){
+          d4.OpenInNewTab("//facebook.com/profile.php?id="+d.id);
+        });
+    d3.select('#back').on('click',function(){
+        d3.selectAll('.popup').attr('fill-opacity','0%').remove(); 
+        d3.select(this).on('click',null); });
+    xx=1*d3.select(t).attr('x'); 
+    yy=1*d3.select(t).attr('y');
+
+    svg.append('rect').attr('class','popup').attr('stroke-width',0)
+        .attr('y',yy).attr('x',xx+sSize).attr('height',pHeight).attr('width',pWidth)
+        .attr('fill','#444').attr('fill-opacity','0%').transition().attr('fill-opacity','90%');
+    svg.append('rect').attr('class','popup').attr('stroke-width',0)
+        .attr('y',yy+sSize).attr('x',xx).attr('height',pHeight-sSize).attr('width',sSize)
+        .attr('fill','#444').attr('fill-opacity','0%').transition().attr('fill-opacity','90%');
+
+     pText=svg.append('text').attr('class','popup')
+        .attr('fill-opacity','0%')
+        .attr('fill','#fff').transition()
+        .attr('fill-opacity','100%');
+    d3.select('text.popup').append('tspan').attr('y',tHeight+yy).attr('x',sSize+2*tMargin+xx)
+        .text(function(){return d.name}); 
+    d3.select('text.popup').append('tspan').attr('y',2*tHeight+yy).attr('x',sSize+2*tMargin+xx)
+        .text(function(){return (d.fAge ? d.fAge : '')+(d.birthday ? ' ('+d.birthday+')' : '')});
+}
+
+function movePics(mode,durat){
+    svg.selectAll('.pic')
+        .transition()
+        .attr('x',function(d){ return d.x[mode]; })
+        .attr('y',function(d){ return d.y[mode]; })
+        .duration(durat ? durat : dur);    
+}
+
+function showAll(){
+    svg.transition().attr('height',height).attr('width',width).duration(dur); 
+    d4.hideOp('.'+curMode).transition().remove().duration(dur);
+    movePics(curMode='agesAll');
+    d4.showOp('#yourAge');
+    svg.select('#axis').selectAll('g').data(ages).enter().append('text').attr('class','axis '+curMode)
+        .style('text-anchor','middle')
+        .style('font-weight',function(d){
+            return d.text==me.fAge ? 'bold' : 'normal'
+        })
+        .text(function(d){ return d.text; })
+        .attr('x',(sSize+delta)/2+labelWidth/2+xMargin)
+        .attr('y',function(d){ return d.n*(sSize+delta)+tHeightAxis+lowHighMargin*((d.n===0) ? 0 : (d.n>=(num.ageGroups-1) ? 2 : 1)); })
+        .style('fill-opacity',0)
+        .transition()
+        .style('fill-opacity',1)
+        .duration(dur);
+    if (you.birthday) {
+        d4.text(svg, num.max.all+' friends the same age', -tMargin*2+width, meY+tHeight-tMargin/2-1, 'labels '+curMode, '', 'end',1);
+        d4.text(svg, num.older.all+' older ('+num.older.allP+'%)', -tMargin*2+width, meY+tHeight-tMargin/2-1+(sSize+delta), 'labels light '+curMode, '', 'end',1);
+        d4.text(svg, num.younger.all+' younger ('+num.younger.allP+'%)', -tMargin*2+width, meY+tHeight-tMargin/2-1-(sSize+delta), 'labels light '+curMode, '', 'end',1);
+      }
+    d4.text(svg,num.noAge.all+' friends hide their age ('+num.noAgeP+'% of total '+num.all+' friends)',-tMargin*2+width, (num.ageGroups-1)*(sSize+delta)+tHeight-tMargin/2-4, 'labels light '+curMode, '', 'end',1);
+}
+
+function showFM(){
+    svg.transition().attr('height',height).attr('width',width).duration(dur); 
+    d4.hideOp('.'+curMode).transition().remove().duration(dur);
+    movePics(curMode='agesFM');
+    d4.showOp('#yourAge');
+    svg.select('#axis').selectAll('g').data(ages).enter().append('text').attr('class','axis '+curMode)
+        .style('text-anchor','middle')
+        .style('font-weight',function(d){
+            return d.text==me.fAge ? 'bold' : 'normal'
+        })
+        .text(function(d){ return d.text; })
+        .attr('x',xMargin+(0.5+num.max.f)*(sSize+delta)+labelWidth/2)
+        .attr('y',function(d){ return d.n*(sSize+delta)+tHeightAxis+lowHighMargin*((d.n===0) ? 0 : (d.n>=(num.ageGroups-1) ? 2 : 1)); })
+        .style('fill-opacity',0)
+        .transition()
+        .style('fill-opacity',1)
+        .duration(dur);
+    if (you.birthday) {
+        d4.text(svg, num.max.f+' girls the same age', tMargin, meY+tHeight-tMargin/2-1, 'labels '+curMode,'','',1);   
+        d4.text(svg, num.older.f+' older ('+num.older.fP+'%)', tMargin, meY+tHeight-tMargin/2-1+(sSize+delta), 'labels light '+curMode, '', '',1);
+        d4.text(svg, num.younger.f+' younger ('+num.younger.fP+'%)', tMargin, meY+tHeight-tMargin/2-1-(sSize+delta), 'labels light '+curMode, '', '',1);
+        d4.text(svg, num.max.m+' boys the same age', -tMargin*2+width, meY+tHeight-tMargin/2-1, 'labels '+curMode, '', 'right',1)
+        d4.text(svg, num.older.m+' older ('+num.older.mP+'%)', -tMargin*2+width, meY+tHeight-tMargin/2-1+(sSize+delta), 'labels light '+curMode, '', 'end',1);
+        d4.text(svg, num.younger.m+' younger ('+num.younger.mP+'%)', -tMargin*2+width, meY+tHeight-tMargin/2-1-(sSize+delta), 'labels light '+curMode, '', 'end',1);
+    } 
+    d4.text(svg,num.noAge.m+' boys hide their age ('+num.noAge.mP+'% of total '+(num.noAge.m+num.m)+' boys)',-tMargin*2+width, (num.ageGroups-1)*(sSize+delta)+tHeight-tMargin/2-4, 'labels light '+curMode, '', 'end',1);
+    d4.text(svg,num.noAge.f+' girls hide their age ('+num.noAge.fP+'% of total '+(num.noAge.f+num.f)+' girls)',tMargin, (num.ageGroups-1)*(sSize+delta)+tHeight-tMargin/2-4, 'labels light '+curMode, '', '',1);             
+}
+
+function randomCalc(){
+  var hW=100,  hH=92;
+  var paper = Raphael('heart',0, 0, hW, hH);
+  d3.select('heart').style('display','none')
+  var heart=paper.path(heartString);
+  for (i=0;i<fr.length;i++) {
+    for(isOk=false;!isOk;){
+      x=Math.random()*hW;
+      y=Math.random()*hH;
+      isOk=heart.isPointInside(x,y);
+    }
+    fr[i].x.heart=(x-hW/2)*(heartWidth/hW)-sSize/2+widthH/2;
+    fr[i].y.heart=(y-hW/2)*(heartWidth/hW)-sSize/2+heightH/2;
+  }
+  paper.remove();   
+  return true;     
+}
+
+function showHeart(){
+  heartWidth=fr.length/2+100;
+  if (heartWidth<200) heartWidth=200;
+  if (heartWidth>500) heartWidth=500;
+
+  d4.hideOp('#yourAge');
+  d4.hideOp('.'+curMode).transition().remove().duration(dur);
+  movePics(curMode='heart',2000);
+     
+  svg.transition().attr('height',heightH).attr('width',widthH).duration(2000); 
+
+  setTimeout(randomCalc,2000);
+}
+
+function post2fbModal(){  
+
+  function op2disp(el){
+    d3.selectAll(el).style('display',function(){
+      //console.log(d3.select(this).style('fill-opacity'),'0');
+      if (d3.select(this).style('fill-opacity')==='0') return 'none'
+        else d3.select(this).style('fill-opacity',null);
+    });
+  }
+  function disp2op(el){
+    d3.selectAll(el).style('display',function(){
+      if (d3.select(this).style('fill-opacity')==='0') return null
+        else d3.select(this).style('fill-opacity',1);
+    })
+  }
+
+  op2disp('rect');
+  op2disp('text');
+
+  //d3.selectAll('rect').style('fill-opacity',null);
+  //d3.selectAll('text').style('fill-opacity',null);
+  curHeight=parseInt(svg.attr('height').split('px'));
+  curWidth=parseInt(svg.attr('width').split('px'));
+  console.log(curWidth,curHeight);
+  var canvas=d4.svg2canvas('svg','canvas',curWidth/shareScale,curHeight/shareScale);
+  context = canvas.getContext('2d');
+  console.log(canvas,context);
+
+  fr.forEach(function(d){
+    base_image = new Image();
+    base_image.src = d.picSrc;
+    if (base_image.src) 
+      context.drawImage(base_image, d.x[curMode]/shareScale, d.y[curMode]/shareScale,sSize/shareScale,sSize/shareScale);
+
+  })
+  console.log(base_image);
+  blob = d4.canvas2png(canvas);
+  console.log(blob); 
+
+  //$('.modal-dialog').css({width:width/shareScale+margins*2});
+  //$('#sharePic').width(width/shareScale);
+  //leftMargin=$('#myModal').modal().find('.modal-dialog').css('margin').split('px')
+  $('#myModal').modal().find('.modal-dialog').css({
+                                  width:Math.max(curWidth/shareScale,width/2)+margins*2,
+                                  height:curHeight/shareScale+margins*2
+                                });
+
+  $('#shareClick').click(function(){
+    $('#myModal').modal('hide');
+    fbPostPerm();
+    
+  });
+
+  disp2op('rect');
+  disp2op('text');
+}
+
+function post2fb(){
+  var fd = new FormData();
+  fd.append("access_token", authToken);
+  fd.append("source", blob);
+  fd.append("message", shareString);
+      $.ajax({
+          url: "https://graph.facebook.com/me/photos?access_token=" + authToken,
+          type: "POST",
+          data: fd,
+          processData: false,
+          contentType: false,
+          cache: false,
+          success: function (data) {
+              console.log("success ", data);
+              $(".shared").alert();
+              d4.show('.shared');
+              d3.select('#postedURL').attr('href',fbPostedURL+data.id)
+          },
+          error: function (shr, status, data) {
+              console.log("error " + data + " Status " + shr.status);
+          },
+          complete: function () {
+              console.log("Posted to facebook");
+          }
+      });
+}
+
+// Saving data during testing
+function postDataAges(postPicURL) {
+ var frAnon=[];
+  fr.forEach(function(d){
+    if (d.itsme) frAnon.push({'g':d.gender,'bd':d.birthday,'me':true})
+    else frAnon.push({'g':d.gender,'bd':d.birthday})
+  });
+  if (!isDataSent) {
+    $.ajax({
+        type: "POST",
+        url: statURL,
+        // The key needs to match your method's input parameter (case-sensitive).
+        data: JSON.stringify({ Img: postPicURL, Friends: frAnon }),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function(data){
+          isDataSent = true; 
+          console.log('data ok',data);},
+        failure: function(errMsg) {
+            console.log(errMsg);
+        }
+    });
+    isDataSent = true;
+  }
+};
+
+function postData(){
+   //console.log(frAnon);
+
+   // ---------------------------------------------------------------------------------------
+   // TO DO http://stackoverflow.com/questions/7466974/posting-images-to-facebook-wall-js-sdk
+   // ---------------------------------------------------------------------------------------
+
+    postDataAges('0');
+    $.ajax({
+        // http://stackoverflow.com/questions/17805456/upload-a-canvas-image-to-imgur-api-v3-with-javascript
+        // Saving picture during testing
+        url: 'https://api.imgur.com/3/image',
+        type: 'post',
+        headers: {
+            Authorization: 'Client-ID 2045a7bf3fc42f4'
+        },
+        data: {
+            image: canvas.toDataURL().split(',')[1]
+        },
+        dataType: 'json',
+        success: function(response) {
+            if(response.success) {
+                isDataSent=false;
+                postDataAges(response.data.link);
+                //window.location = response.data.link;
+            }
+        }
+    });    
+}
+
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-46761739-1', 'vritti.ru');
+  ga('send', 'pageview');
+
+</script></body></html>

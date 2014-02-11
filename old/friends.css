@@ -1,0 +1,16 @@
+body {   /*font-family: 'PT Sans';*/   background: #ddd;   color: #222; font-size: 14px;}
+text  { }
+p { }
+.labels { fill: #666; font-size: 11px;}
+.light { fill: #aaa;}
+.container {width: 100%; }
+.starter-template {width: 100%;background: #ddd; }
+.footer {
+    padding: 10px;
+  
+  background-color: #bbb;
+}
+.smalltext {   /*font-family: 'PT Sans';*/  color: #222; font-size: 12px; }
+.share {color:#777; }
+
+
